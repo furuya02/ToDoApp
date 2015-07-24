@@ -98,7 +98,7 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
                 if task.ID == repository.newItem {
                     repository.newItem = 0 // エフェクトに使用が終わったら初期化しておく
                     cell.backgroundColor = UIColor.mySin()
-                    UIView.animateWithDuration(3,animations: {
+                    UIView.animateWithDuration(1.5,animations: {
                         () -> Void  in
                         cell.backgroundColor = UIColor.whiteColor()
                     })
