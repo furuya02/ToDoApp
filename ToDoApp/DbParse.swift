@@ -22,7 +22,7 @@ class DbParse : DbCloud{
 
     private let httpClient:HttpClient
     private let tableName = "task"
-    private let apiUrl = "https://api.parse.com/1/classes/"
+    private let apiUrl = "https://api.parse.com/1/"
     
     var params : [String:String] = [
         "X-Parse-Application-Id" : ParseSecret.appId ,
@@ -33,10 +33,45 @@ class DbParse : DbCloud{
         self.httpClient = httpClient
     }
     
+    //Notifycation
+    func pushInstall(deviceToken:String){
+        let url = apiUrl + "installations/"
+
+        var str = "{"
+        str += "\"deviceType\":\"ios\""
+        str += ","
+        str += "\"deviceToken\":\"\(deviceToken)\""
+        str += ","
+        str += "\"channels\":[\"todo\"]"
+        str += "}"
+        
+        let request = httpClient.request("POST",url: url,headers: params,body: str)
+        
+        httpClient.responseJSON(request,completionHandler: {
+            (_, _, data, error) in
+            if let error = error {
+                NSLog("ERROR " + error.localizedDescription)
+            }else{
+                if data != nil {
+                    let json:JSON = SwiftyJSON.JSON(data!)
+                    println(json)
+                    
+                    //論理エラーが発生している(objectIdが存在しない場合など)
+                    if let objectId = json["objectId"].string {
+                        var c = objectId
+                        //completionHandler(AsyncResult(task))
+                        //return
+                    }
+                }
+            }
+        })
+
+    }
+    
     // 一覧
     func selectAsync(completionHandler: (_:AsyncResult<[Task]>) -> Void) {
         
-        let url = apiUrl + tableName
+        let url = apiUrl + "classes/" + tableName
         let request = httpClient.request("GET",url: url,headers: params,body: nil)
         
         httpClient.responseJSON(request,completionHandler: {
@@ -66,7 +101,7 @@ class DbParse : DbCloud{
     //追加（task.objectId != "" の場合は、更新となる）
     func insertAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void){
         //INSERTの場合
-        var url = apiUrl + tableName
+        var url = apiUrl + "classes/" + tableName
         var method = "POST"
         
         //UPDATEの場合

@@ -43,6 +43,10 @@ class Repository{
     func setRefreshHandler(handler:()->Void){
         self.refreshHandler = handler
     }
+    // デバイストークン
+    func setDeviceToken(deviceToken:String){
+        self.dbCloud.pushInstall(deviceToken)
+    }
     
     // MARK: - public function
     // viewの取得
@@ -109,7 +113,7 @@ class Repository{
             // 同期を頻繁に行う場合
             // クラウドとの通信に成功している場合、ここで整合処理を実施する
             // 負荷が上がるので、将来、通知方式に修正する
-            self.integration()
+            //self.integration()
             
         })
         
