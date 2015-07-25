@@ -17,6 +17,8 @@ class Repository{
     
     // 変化したアイテム
     var newItem : Int = 0
+    // 通知したアイテム
+    var sendObjectId:String = ""
     
     // ビューの種類
     var viewMode : ViewMode {
@@ -111,6 +113,7 @@ class Repository{
                         self.refreshView()
                     }
                 }
+                self.sendObjectId = task.objectId // 自ら通知したデータは、更新処理の対象外とするために記憶する
                 self.dbCloud.pushSend(task.objectId) // 通知の送信
             }
         })
@@ -118,6 +121,13 @@ class Repository{
     
     //整合処理（通知時の処理）
     func integration(objectId:String){
+        
+        // 自分が送信した通知の場合は、処理なし
+        if sendObjectId == objectId {
+            sendObjectId = ""
+            return
+        }
+        
         
         dbCloud.selectAsync(objectId,completionHandler: {
             (asyncResult) in

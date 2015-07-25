@@ -188,7 +188,7 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
                 
             }
         }else{
-            refresh() // TableViewの表示更新
+            //refresh() // TableViewの表示更新
             // クラウドとの通信に成功している場合は、バックグランドで整合処理も行う
             repository.integration() //ローカルとクラウド間のデータの整合
         }

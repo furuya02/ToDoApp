@@ -116,7 +116,8 @@ class TaskTest: XCTestCase {
         
         //setUp
         let sut = CreateBaseTask()
-        let expected = "{\"lastUpdate\":{\"__type\":\"Date\",\"iso\":\"2015-01-01T00:00:00.000Z\"},\"title\":\"title\",\"memo\":\"memo\",\"isDone\":false,\"isDelete\":false}"
+                
+        let expected = "{\"lastUpdate\":{\"__type\":\"Date\",\"iso\":\"2015-01-01T00:00:00.000Z\"},\"title\":\"title\",\"memo\":\"memo\",\"isDone\":false,\"isMark\":false,\"isDelete\":false}"
         //exercise
         var actual = sut.toJson()
         
