@@ -10,6 +10,9 @@ import Foundation
 
 // テストの際にモックに置き換えることができるようにプロトタイプで定義する
 protocol DbCloud{
-    func selectAsync(completionHandler: (_:AsyncResult<[Task]>) -> Void)
+    func selectAsync(objectId:String?,completionHandler: (_:AsyncResult<[Task]>) -> Void)
     func insertAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void)
+    func pushInstall(deviceToken:String)
+    func pushSend(objectId:String)
+
 }

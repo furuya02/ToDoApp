@@ -43,6 +43,10 @@ class Repository{
     func setRefreshHandler(handler:()->Void){
         self.refreshHandler = handler
     }
+    // デバイストークン
+    func pushInstall(deviceToken:String){
+        self.dbCloud.pushInstall(deviceToken)
+    }
     
     // MARK: - public function
     // viewの取得
@@ -96,6 +100,9 @@ class Repository{
                 }
                 //その他のエラーは、そのまま返す
             }else{
+                
+                
+                
                 //INSERTの場合、ローカルのDBのobjectIdを更新する
                 if mode == .Insert {
                     if let t = asyncResult.val! {
@@ -104,23 +111,43 @@ class Repository{
                         self.refreshView()
                     }
                 }
+                self.dbCloud.pushSend(task.objectId) // 通知の送信
             }
-            
-            // 同期を頻繁に行う場合
-            // クラウドとの通信に成功している場合、ここで整合処理を実施する
-            // 負荷が上がるので、将来、通知方式に修正する
-            self.integration()
-            
         })
-        
     }
     
-    //整合処理（データ取得）
+    //整合処理（通知時の処理）
+    func integration(objectId:String){
+        
+        dbCloud.selectAsync(objectId,completionHandler: {
+            (asyncResult) in
+            if let error = asyncResult.error {
+                // 読み込みに失敗した場合は、継続しない
+            }else{
+                if let ar = asyncResult.val {
+                    if ar.count == 1 {
+                        let ct = ar[0]
+                        // ローカル側に同じデータがあるか
+                        if let lt = self.search(self.dbLocal.select(), objectId: objectId) {
+                            ct.ID = lt.ID
+                        }
+                        self.dbLocal.insert(ct)
+                        self.newItem  = ct.ID
+                        self.refreshView()// INSERTの場合、IDの更新も、ここで反映される
+                    }
+                }
+            }
+        })
+    }
+
+    
+    
+    //整合処理（起動時の処理）
     func integration(){
         //ローカルの一覧取得
         var localTasks = dbLocal.select()
         // クラウドの一覧取得
-        dbCloud.selectAsync({
+        dbCloud.selectAsync(nil,completionHandler: {
             (asyncResult) in
             if let error = asyncResult.error {
                 // 読み込みに失敗した場合は、継続しない

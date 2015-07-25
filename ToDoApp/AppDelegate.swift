@@ -13,11 +13,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+        if (UIDevice.currentDevice().systemVersion as NSString).floatValue >= 8.0 {
+            let types = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
+            let mySettings = UIUserNotificationSettings(forTypes:types, categories:nil)
+            
+            application.registerUserNotificationSettings(mySettings)
+            application.registerForRemoteNotifications()
+            
+        } else{ //iOS7以前
+            application.registerForRemoteNotificationTypes( UIRemoteNotificationType.Badge | UIRemoteNotificationType.Sound | UIRemoteNotificationType.Alert )
+        }
         return true
     }
+    
+    func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
+        NSLog("ERROR " + error.localizedDescription)
+    }
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        if let controller = self.window?.rootViewController as? MainViewController {
+            if let aps = userInfo["aps"] as? NSDictionary {
+                if let objectId = aps["alert"] as? NSString {
+                    controller.repository.integration(objectId as String) // 整合処理
+                }
+            }
+        }
+    }
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        var deviceToken = ( deviceToken.description as NSString )
+            .stringByTrimmingCharactersInSet( NSCharacterSet(charactersInString: "<>" ))
+            .stringByReplacingOccurrencesOfString(" ", withString: "") as String
+        if let controller = self.window?.rootViewController as? MainViewController {
+            controller.repository.pushInstall(deviceToken) // Push通知の登録
+        }
+    }
+    
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

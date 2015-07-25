@@ -22,7 +22,7 @@ class DbParse : DbCloud{
 
     private let httpClient:HttpClient
     private let tableName = "task"
-    private let apiUrl = "https://api.parse.com/1/classes/"
+    private let apiUrl = "https://api.parse.com/1/"
     
     var params : [String:String] = [
         "X-Parse-Application-Id" : ParseSecret.appId ,
@@ -33,10 +33,79 @@ class DbParse : DbCloud{
         self.httpClient = httpClient
     }
     
+    //Push Notifycation の登録
+    func pushInstall(deviceToken:String){
+        let url = apiUrl + "installations/"
+
+        var str = "{"
+        str += "\"deviceType\":\"ios\""
+        str += ","
+        str += "\"deviceToken\":\"\(deviceToken)\""
+        str += ","
+        str += "\"channels\":[\"todo\"]"
+        str += "}"
+        
+        let request = httpClient.request("POST",url: url,headers: params,body: str)
+        
+        httpClient.responseJSON(request,completionHandler: {
+            (_, _, data, error) in
+            if let error = error {
+                NSLog("ERROR " + error.localizedDescription)
+            }else{
+                if data != nil {
+                    let json:JSON = SwiftyJSON.JSON(data!)
+                    println(json)
+                }
+            }
+        })
+
+    }
+    //Push Notifycation の送信
+    func pushSend(objectId:String){
+        let url = apiUrl + "push"
+        
+        var str = "{"
+        str += "\"channels\":[\"todo\"]"
+        str += ","
+        str += "\"data\":{"
+        str += "\"alert\":\"\(objectId)\""
+        str += ","
+        str += "\"badge\":\"Increment\""
+        str += ","
+        str += "\"sound\":\"cheering.caf\""
+        str += ","
+        str += "\"title\":\"Mets Score!\""
+        str += "}"
+        str += "}"
+
+        
+        let request = httpClient.request("POST",url: url,headers: params,body: str)
+        
+        httpClient.responseJSON(request,completionHandler: {
+            (_, _, data, error) in
+            if let error = error {
+                NSLog("ERROR " + error.localizedDescription)
+            }else{
+                if data != nil {
+                    let json:JSON = SwiftyJSON.JSON(data!)
+                    println(json)
+                    
+                    //論理エラーが発生している(objectIdが存在しない場合など)
+                    if let objectId = json["objectId"].string {
+                        var c = objectId
+                        //completionHandler(AsyncResult(task))
+                        //return
+                    }
+                }
+            }
+        })
+        
+    }
+    
     // 一覧
     func selectAsync(completionHandler: (_:AsyncResult<[Task]>) -> Void) {
         
-        let url = apiUrl + tableName
+        let url = apiUrl + "classes/" + tableName
         let request = httpClient.request("GET",url: url,headers: params,body: nil)
         
         httpClient.responseJSON(request,completionHandler: {
@@ -63,10 +132,49 @@ class DbParse : DbCloud{
         })
     }
 
+    // 一覧
+    func selectAsync(objectId:String?,completionHandler: (_:AsyncResult<[Task]>) -> Void) {
+
+        var url = apiUrl + "classes/" + tableName
+
+        if let oid = objectId {
+            let str = "where={\"objectId\":\"\(oid)\"}"
+            if let encodedStr:String = str.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) {
+                url += "?" + encodedStr
+            }
+        }
+        
+        let request = httpClient.request("GET",url: url,headers: params,body: nil)
+        httpClient.responseJSON(request,completionHandler: {
+            (_, _ , data, error) in
+            if let error = error {
+                NSLog(error.localizedDescription + "  code=\(error.code)")
+                completionHandler(AsyncResult(error))
+            }else{
+                var ar:[Task] = []
+                
+                if data != nil {
+                    let json:JSON = SwiftyJSON.JSON(data!)
+                    let results = json["results"]
+
+                    NSLog("\(results)")
+                    
+                    for (key,j) in json["results"]{
+                        var t = Task(title: "",memo: "")
+                        if t.fromJson(j) {
+                            ar.append(t)
+                        }
+                    }
+                }
+                completionHandler(AsyncResult(ar))
+            }
+        })
+    }
+
     //追加（task.objectId != "" の場合は、更新となる）
     func insertAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void){
         //INSERTの場合
-        var url = apiUrl + tableName
+        var url = apiUrl + "classes/" + tableName
         var method = "POST"
         
         //UPDATEの場合

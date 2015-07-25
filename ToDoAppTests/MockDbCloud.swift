@@ -15,12 +15,21 @@ class MockDbCloud : MockDb,DbCloud{
         mode = .Cloud
     }
     
-    func selectAsync(completionHandler: (_:AsyncResult<[Task]>) -> Void){
+
+    func selectAsync(objectId:String?,completionHandler: (_:AsyncResult<[Task]>) -> Void){
         completionHandler(AsyncResult<[Task]>(ar))
     }
     
     func insertAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void){
         add(task)
     }
+    
+    func pushInstall(deviceToken:String){
+    }
+    
+    func pushSend(objectId:String){
+    }
+
+
     
 }
