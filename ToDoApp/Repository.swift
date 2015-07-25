@@ -68,15 +68,17 @@ class Repository{
         var mode = Mode.Insert
         
         task.lastUpdate = NSDate() // 更新時間の記録
-        // ローカルDBにobjectIdが存在するか
-        if let t = dbLocal.search(task.objectId) {
-            // 存在する場合は、更新処理となる
-            task.ID = t.ID
-            mode = .Update
-        }else{
-            // 存在しない場合は、追加処理となる
-            task.ID = 0
+
+        // 新規か更新かの判断
+        if task.objectId != "" {
+            // ローカルDBにobjectIdが存在するか
+            if let t = dbLocal.search(task.objectId) {
+                // 更新
+                task.ID = t.ID
+                mode = .Update
+            }
         }
+
         // ローカルDBへの追加
         if !dbLocal.insert(task) {
             //エラー時は、NSErrorを生成して返す(code=99によってポップアップのエラーが表示される)
