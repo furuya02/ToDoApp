@@ -25,6 +25,9 @@ class MockDbCloud : MockDb,DbCloud{
     
     func pushInstall(deviceToken:String){
     }
+    func pushSend(){
+    }
+
 
     
 }

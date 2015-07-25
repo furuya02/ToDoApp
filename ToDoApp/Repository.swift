@@ -44,7 +44,7 @@ class Repository{
         self.refreshHandler = handler
     }
     // デバイストークン
-    func setDeviceToken(deviceToken:String){
+    func pushInstall(deviceToken:String){
         self.dbCloud.pushInstall(deviceToken)
     }
     
@@ -100,6 +100,9 @@ class Repository{
                 }
                 //その他のエラーは、そのまま返す
             }else{
+                
+                self.dbCloud.pushSend() // 通知の送信
+                
                 //INSERTの場合、ローカルのDBのobjectIdを更新する
                 if mode == .Insert {
                     if let t = asyncResult.val! {

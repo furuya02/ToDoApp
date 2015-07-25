@@ -30,12 +30,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
         NSLog("ERROR " + error.localizedDescription)
     }
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        if let controller = self.window?.rootViewController as? MainViewController {
+            controller.repository.integration() // 整合処理
+        }
+    }
+    
     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
         var deviceToken = ( deviceToken.description as NSString )
             .stringByTrimmingCharactersInSet( NSCharacterSet(charactersInString: "<>" ))
             .stringByReplacingOccurrencesOfString(" ", withString: "") as String
         if let controller = self.window?.rootViewController as? MainViewController {
-            controller.repository.setDeviceToken(deviceToken)
+            controller.repository.pushInstall(deviceToken) // Push通知の登録
         }
     }
     

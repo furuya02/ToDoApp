@@ -33,7 +33,7 @@ class DbParse : DbCloud{
         self.httpClient = httpClient
     }
     
-    //Notifycation
+    //Push Notifycation の登録
     func pushInstall(deviceToken:String){
         let url = apiUrl + "installations/"
 
@@ -55,6 +55,40 @@ class DbParse : DbCloud{
                 if data != nil {
                     let json:JSON = SwiftyJSON.JSON(data!)
                     println(json)
+                }
+            }
+        })
+
+    }
+    //Push Notifycation の送信
+    func pushSend(){
+        let url = apiUrl + "push"
+        
+        var str = "{"
+        str += "\"channels\":[\"todo\"]"
+        str += ","
+        str += "\"data\":{"
+        str += "\"alert\":\"TEST\""
+        str += ","
+        str += "\"badge\":\"Increment\""
+        str += ","
+        str += "\"sound\":\"cheering.caf\""
+        str += ","
+        str += "\"title\":\"Mets Score!\""
+        str += "}"
+        str += "}"
+
+        
+        let request = httpClient.request("POST",url: url,headers: params,body: str)
+        
+        httpClient.responseJSON(request,completionHandler: {
+            (_, _, data, error) in
+            if let error = error {
+                NSLog("ERROR " + error.localizedDescription)
+            }else{
+                if data != nil {
+                    let json:JSON = SwiftyJSON.JSON(data!)
+                    println(json)
                     
                     //論理エラーが発生している(objectIdが存在しない場合など)
                     if let objectId = json["objectId"].string {
@@ -65,7 +99,7 @@ class DbParse : DbCloud{
                 }
             }
         })
-
+        
     }
     
     // 一覧
