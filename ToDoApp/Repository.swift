@@ -45,12 +45,10 @@ class Repository{
     func setRefreshHandler(handler:()->Void){
         self.refreshHandler = handler
     }
-    // デバイストークン
-    func pushInstall(deviceToken:String){
-        self.dbCloud.pushInstall(deviceToken)
-    }
+    
     
     // MARK: - public function
+
     // viewの取得
     var count:Int{
         return view.count
@@ -116,7 +114,7 @@ class Repository{
                     }
                 }
                 self.sendObjectId = task.objectId // 自ら通知したデータは、更新処理の対象外とするために記憶する
-                self.dbCloud.pushSend(task.objectId) // 通知の送信
+                self.dbCloud.sendPush(task.objectId) // 通知の送信
             }
         })
     }
@@ -173,6 +171,16 @@ class Repository{
         refreshView() // 再表示
     }
     
+    // push通知の登録
+    func installPush(deviceToken:String){
+        self.dbCloud.installPush(deviceToken)
+    }
+    
+    // push通知の登録削除
+    func uninstallPush(){
+        self.dbCloud.uninstallPush()
+    }
+
     // MARK: - private function
 
     //整合処理（本番処理）

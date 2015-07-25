@@ -24,6 +24,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else{ //iOS7以前
             application.registerForRemoteNotificationTypes( UIRemoteNotificationType.Badge | UIRemoteNotificationType.Sound | UIRemoteNotificationType.Alert )
         }
+
+        application.applicationIconBadgeNumber = 0
+//            UIApplication.sharedApplication().applicationIconBadgeNumber = 0
         return true
     }
     
@@ -46,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .stringByTrimmingCharactersInSet( NSCharacterSet(charactersInString: "<>" ))
             .stringByReplacingOccurrencesOfString(" ", withString: "") as String
         if let controller = self.window?.rootViewController as? MainViewController {
-            controller.repository.pushInstall(deviceToken) // Push通知の登録
+            controller.repository.installPush(deviceToken) // Push通知の登録
         }
     }
     
@@ -70,7 +73,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillTerminate(application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        if let controller = self.window?.rootViewController as? MainViewController {
+            controller.repository.uninstallPush() // Push通知の登録削除
+        }
     }
 
 
