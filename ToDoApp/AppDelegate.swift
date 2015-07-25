@@ -33,7 +33,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
         if let controller = self.window?.rootViewController as? MainViewController {
-            controller.repository.integration() // 整合処理
+            if let aps = userInfo["aps"] as? NSDictionary {
+                if let objectId = aps["alert"] as? NSString {
+                    controller.repository.integration(objectId as String) // 整合処理
+                }
+            }
         }
     }
     

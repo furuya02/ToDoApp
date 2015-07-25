@@ -30,7 +30,7 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
         view.backgroundColor = UIColor.silverTree()
 
         //検索・ごみ箱・マークの各ビューが閉じた時のハンドラ
-        //trashView.onClose = onCloseHeaderView
+        trashView.onClose = onCloseHeaderView
         searchView.onClose = onCloseHeaderView
         markView.onClose = onCloseHeaderView 
         

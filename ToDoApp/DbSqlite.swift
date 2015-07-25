@@ -45,8 +45,7 @@ class DbSqlite : DbLocal{
         var ar:[Task] = []
         
         // lastUpdateでソートする場合
-        //let sql = "SELECT * FROM \(tableName) ORDER BY lastUpdate DESC"
-        let sql = "SELECT * FROM \(tableName)"
+        let sql = "SELECT * FROM \(tableName) ORDER BY lastUpdate DESC"
         
         let (resultSet, err) = SD.executeQuery(sql)
         if err == nil {

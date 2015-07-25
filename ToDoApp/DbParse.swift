@@ -61,14 +61,14 @@ class DbParse : DbCloud{
 
     }
     //Push Notifycation の送信
-    func pushSend(){
+    func pushSend(objectId:String){
         let url = apiUrl + "push"
         
         var str = "{"
         str += "\"channels\":[\"todo\"]"
         str += ","
         str += "\"data\":{"
-        str += "\"alert\":\"TEST\""
+        str += "\"alert\":\"\(objectId)\""
         str += ","
         str += "\"badge\":\"Increment\""
         str += ","
@@ -129,6 +129,45 @@ class DbParse : DbCloud{
                 }
             }
             completionHandler(AsyncResult(ar))
+        })
+    }
+
+    // 一覧
+    func selectAsync(objectId:String?,completionHandler: (_:AsyncResult<[Task]>) -> Void) {
+
+        var url = apiUrl + "classes/" + tableName
+
+        if let oid = objectId {
+            let str = "where={\"objectId\":\"\(oid)\"}"
+            if let encodedStr:String = str.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) {
+                url += "?" + encodedStr
+            }
+        }
+        
+        let request = httpClient.request("GET",url: url,headers: params,body: nil)
+        httpClient.responseJSON(request,completionHandler: {
+            (_, _ , data, error) in
+            if let error = error {
+                NSLog(error.localizedDescription + "  code=\(error.code)")
+                completionHandler(AsyncResult(error))
+            }else{
+                var ar:[Task] = []
+                
+                if data != nil {
+                    let json:JSON = SwiftyJSON.JSON(data!)
+                    let results = json["results"]
+
+                    NSLog("\(results)")
+                    
+                    for (key,j) in json["results"]{
+                        var t = Task(title: "",memo: "")
+                        if t.fromJson(j) {
+                            ar.append(t)
+                        }
+                    }
+                }
+                completionHandler(AsyncResult(ar))
+            }
         })
     }
 

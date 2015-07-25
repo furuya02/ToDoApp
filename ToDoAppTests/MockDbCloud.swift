@@ -15,7 +15,8 @@ class MockDbCloud : MockDb,DbCloud{
         mode = .Cloud
     }
     
-    func selectAsync(completionHandler: (_:AsyncResult<[Task]>) -> Void){
+
+    func selectAsync(objectId:String?,completionHandler: (_:AsyncResult<[Task]>) -> Void){
         completionHandler(AsyncResult<[Task]>(ar))
     }
     
@@ -25,7 +26,8 @@ class MockDbCloud : MockDb,DbCloud{
     
     func pushInstall(deviceToken:String){
     }
-    func pushSend(){
+    
+    func pushSend(objectId:String){
     }
 
 
