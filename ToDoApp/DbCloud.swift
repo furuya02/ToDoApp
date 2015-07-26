@@ -12,6 +12,7 @@ import Foundation
 protocol DbCloud{
     func selectAsync(objectId:String?,completionHandler: (_:AsyncResult<[Task]>) -> Void)
     func insertAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void)
+    func deleteAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void)
     func installPush(deviceToken:String)
     func uninstallPush()
     func sendPush(objectId:String)

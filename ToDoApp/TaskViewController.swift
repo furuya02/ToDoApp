@@ -23,13 +23,6 @@ class TaskViewController: UIViewController {
     @IBOutlet weak var textFieldTitle: UITextField!
     @IBOutlet weak var textViewMemo: UITextView!
     //MARK: - View
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//    }
-//
-//    override func didReceiveMemoryWarning() {
-//        super.didReceiveMemoryWarning()
-//    }
     override func viewWillAppear(animated: Bool) {
         
         viewHeader.backgroundColor = UIColor.silverTree()
@@ -39,7 +32,6 @@ class TaskViewController: UIViewController {
         
         setControl() // Data -> Control
     }
-    
     
     
     //MARK: - setControl/getControl

@@ -23,6 +23,10 @@ class MockDbCloud : MockDb,DbCloud{
     func insertAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void){
         add(task)
     }
+
+    func deleteAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void){
+        del(task)
+    }
     
     func installPush(deviceToken:String){}
     func uninstallPush(){}

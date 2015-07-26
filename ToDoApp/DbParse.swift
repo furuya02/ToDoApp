@@ -208,6 +208,27 @@ class DbParse : DbCloud{
         })
     }
     
+    
+    //削除
+    func deleteAsync(task: Task,completionHandler: (_:AsyncResult<Task?>)->Void){
+        var url = apiUrl + "classes/" + tableName + "/" + task.objectId
+        var method = "DELETE"
+        
+        let request = httpClient.request(method,url: url,headers: params,body: nil)
+        httpClient.responseJSON(request,completionHandler: {
+            (_, _, data, error) in
+            if let error = error {
+                completionHandler(AsyncResult(error))
+            }else{
+                if data != nil {
+                    let json:JSON = SwiftyJSON.JSON(data!)
+                }
+                completionHandler(AsyncResult(nil))
+            }
+        })
+    }
+
+    
     private func toNSDate(str:String) -> NSDate?{
         var formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
