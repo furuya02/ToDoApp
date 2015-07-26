@@ -13,44 +13,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    var deviceToken : String = ""
+    var mainView : MainViewController!
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
+        mainView = self.window?.rootViewController as! MainViewController
+        
         if (UIDevice.currentDevice().systemVersion as NSString).floatValue >= 8.0 {
-            let types = UIUserNotificationType.Badge | UIUserNotificationType.Sound | UIUserNotificationType.Alert
+            let types = UIUserNotificationType.Alert
             let mySettings = UIUserNotificationSettings(forTypes:types, categories:nil)
             
             application.registerUserNotificationSettings(mySettings)
             application.registerForRemoteNotifications()
             
         } else{ //iOS7以前
-            application.registerForRemoteNotificationTypes( UIRemoteNotificationType.Badge | UIRemoteNotificationType.Sound | UIRemoteNotificationType.Alert )
+            application.registerForRemoteNotificationTypes( UIRemoteNotificationType.Alert )
         }
 
+        //バッチ非表示
         application.applicationIconBadgeNumber = 0
-//            UIApplication.sharedApplication().applicationIconBadgeNumber = 0
         return true
     }
     
     func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
+
         NSLog("ERROR " + error.localizedDescription)
     }
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
-        if let controller = self.window?.rootViewController as? MainViewController {
-            if let aps = userInfo["aps"] as? NSDictionary {
-                if let objectId = aps["alert"] as? NSString {
-                    controller.repository.integration(objectId as String) // 整合処理
-                }
+        if let aps = userInfo["aps"] as? NSDictionary {
+            if let objectId = aps["alert"] as? NSString {
+                mainView.repository.integration(objectId as String) // 整合処理（１件のみ）
             }
         }
     }
     
     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
-        var deviceToken = ( deviceToken.description as NSString )
+
+        // デバイストークン取得
+        self.deviceToken = ( deviceToken.description as NSString )
             .stringByTrimmingCharactersInSet( NSCharacterSet(charactersInString: "<>" ))
             .stringByReplacingOccurrencesOfString(" ", withString: "") as String
-        if let controller = self.window?.rootViewController as? MainViewController {
-            controller.repository.installPush(deviceToken) // Push通知の登録
-        }
+        
+        mainView.repository.installPush(self.deviceToken) // Push通知の登録
     }
     
 
@@ -60,24 +66,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidEnterBackground(application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        mainView.repository.uninstallPush() // Push通知の解除
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        mainView.repository.installPush(self.deviceToken) // Push通知の登録
+        mainView.repository.integration() // 整合処理（全件）
     }
 
-    func applicationDidBecomeActive(application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    }
+//    func applicationDidBecomeActive(application: UIApplication) {
+//    }
 
-    func applicationWillTerminate(application: UIApplication) {
-        if let controller = self.window?.rootViewController as? MainViewController {
-            controller.repository.uninstallPush() // Push通知の登録削除
-        }
-    }
-
+//    func applicationWillTerminate(application: UIApplication) {
+//
+//    }
 
 }
 

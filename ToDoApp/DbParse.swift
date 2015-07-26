@@ -121,31 +121,33 @@ class DbParse : DbCloud{
     // 一覧
     func selectAsync(completionHandler: (_:AsyncResult<[Task]>) -> Void) {
         
-        let url = apiUrl + "classes/" + tableName
-        let request = httpClient.request("GET",url: url,headers: params,body: nil)
+        selectAsync(nil,completionHandler: completionHandler)
         
-        httpClient.responseJSON(request,completionHandler: {
-            (_, _ , data, error) in
-            
-            var ar:[Task] = []
-            
-            if error == nil {
-                if data != nil {
-                    let json:JSON = SwiftyJSON.JSON(data!)
-                    let results = json["results"]
-                    
-                    //すべてのカラムのnilがない場合のみ有効なデータとする
-                    //DBから取り出す時点でunwrapperを完了している、TaskにはOptionl型は存在しない
-                    for (key,j) in json["results"]{
-                        var t = Task(title: "",memo: "")
-                        if t.fromJson(j) {
-                            ar.append(t)
-                        }
-                    }
-                }
-            }
-            completionHandler(AsyncResult(ar))
-        })
+//        let url = apiUrl + "classes/" + tableName
+//        let request = httpClient.request("GET",url: url,headers: params,body: nil)
+//        
+//        httpClient.responseJSON(request,completionHandler: {
+//            (_, _ , data, error) in
+//            
+//            var ar:[Task] = []
+//            
+//            if error == nil {
+//                if data != nil {
+//                    let json:JSON = SwiftyJSON.JSON(data!)
+//                    let results = json["results"]
+//                    
+//                    //すべてのカラムのnilがない場合のみ有効なデータとする
+//                    //DBから取り出す時点でunwrapperを完了している、TaskにはOptionl型は存在しない
+//                    for (key,j) in json["results"]{
+//                        var t = Task(title: "",memo: "")
+//                        if t.fromJson(j) {
+//                            ar.append(t)
+//                        }
+//                    }
+//                }
+//            }
+//            completionHandler(AsyncResult(ar))
+//        })
     }
 
     // 一覧
@@ -172,8 +174,6 @@ class DbParse : DbCloud{
                 if data != nil {
                     let json:JSON = SwiftyJSON.JSON(data!)
                     let results = json["results"]
-
-                    NSLog("\(results)")
                     
                     for (key,j) in json["results"]{
                         var t = Task(title: "",memo: "")
@@ -210,7 +210,6 @@ class DbParse : DbCloud{
             }else{
                 if data != nil {
                     let json:JSON = SwiftyJSON.JSON(data!)
-                    println(json)
                     
                     //論理エラーが発生している(objectIdが存在しない場合など)
                     if let errorStr = json["error"].string {

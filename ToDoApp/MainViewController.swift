@@ -35,9 +35,8 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
         markView.onClose = onCloseHeaderView 
         
         searchView.onSearch = onSearch // 検索文字列が変化した時のイベントハンドラ
-        repository.setRefreshHandler(refresh) // 表示更新のハンドラを追加
+        repository.setRefreshHandler({ self.tableView.reloadData() }) // 表示更新のハンドラを追加
         repository.integration() //ローカルとクラウド間のデータの整合
-        
         setViewMode(.Normal)
         
     }
@@ -47,7 +46,6 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
     }
     
     override func viewDidAppear(animated: Bool) {
-
 
         if let msg = popupMessage { // 画面遷移時のエラーがセットされている場合
             var str = msg.componentsSeparatedByString("\t")
@@ -188,7 +186,6 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
                 
             }
         }else{
-            //refresh() // TableViewの表示更新
             // クラウドとの通信に成功している場合は、バックグランドで整合処理も行う
             repository.integration() //ローカルとクラウド間のデータの整合
         }
@@ -201,11 +198,5 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
         markView.visible = mode == .Mark ? true : false
         
     }
-
-    // TableViewの表示更新
-    func refresh() {
-        tableView.reloadData()
-    }
-
 }
 
