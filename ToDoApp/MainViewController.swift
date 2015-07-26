@@ -58,7 +58,10 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
     @IBAction func unwindTaskView(segue : UIStoryboardSegue){
         let view = segue.sourceViewController as! TaskViewController
         if view.isModify {// 修正された場合の処理
-            repository.setAsync(view.task,completeHandler: completeHandler) //ID==0はINSERTされ、ID!=0はUPDATEされる
+            if !repository.set(view.task) {
+                //エラー発生（ポップアップメッセージ）
+                popupMessage = "エラー\tデータの保存に失敗しました"
+            }
         }
     }
     
@@ -129,7 +132,7 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
             let task = repository.get(indexPath.row)
             // 表示モードがごみ箱の時は、復活となる
             task.isDelete = repository.viewMode == ViewMode.Trash ? false : true
-            repository.setAsync(task,completeHandler: completeHandler)
+            repository.set(task)
             // ごみ箱モードの場合、復活処理の後、ノーマルモードに復帰する
             if repository.viewMode == .Trash {
                 setViewMode(.Normal)
@@ -163,15 +166,6 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
         repository.searchStr = searchText
     }
     
-    // DB操作完了時のコールバック
-    private func completeHandler(asyncResult:AsyncResult<Task?>){
-        if let error = asyncResult.error {
-            if error.code == 101 {
-                //エラー発生（ポップアップメッセージ）
-                popupMessage = "エラー\tデータの保存に失敗しました"
-            }
-        }
-    }
     
     // ビューの種類の変更
     func setViewMode(mode:ViewMode){

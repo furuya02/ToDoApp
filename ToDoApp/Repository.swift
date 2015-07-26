@@ -59,7 +59,7 @@ class Repository{
     }
     
     // 新規（更新）
-    func setAsync(task:Task,completeHandler:(_:AsyncResult<Task?>) -> Void){
+    func set(task:Task) -> Bool{
         
         
         enum Mode{ case Insert,Update }
@@ -79,11 +79,9 @@ class Repository{
 
         // ローカルDBへの追加
         if !dbLocal.insert(task) {
-            //エラー時は、NSErrorを生成して返す(code=99によってポップアップのエラーが表示される)
-            var error = NSError(domain: "SQLite Insert Error", code: 99, userInfo: nil)
-            completeHandler(AsyncResult(error))
-            return
+            return false
         }
+
         newItem  = task.ID
         refreshView()// INSERTの場合、IDの更新も、ここで反映される
         
@@ -117,6 +115,7 @@ class Repository{
                 self.dbCloud.sendPush(task.objectId) // 通知の送信
             }
         })
+        return true
     }
     
     //整合処理（通知時の処理）

@@ -32,9 +32,9 @@ class RepositoryTest: XCTestCase {
         let expected = 2
 
         //exercise
-        sut.setAsync(Task(title: "",memo: ""),completeHandler: { (a) in })
+        sut.set(Task(title: "",memo: ""))
         localDb.ar[0].objectId = "Obj1" // 本来は、非同期で更新されるローカルのobjectIdを強制的に更新する
-        sut.setAsync(Task(title: "",memo: ""),completeHandler: { (a) in })
+        sut.set(Task(title: "",memo: ""))
         localDb.ar[1].objectId = "Obj2" // 本来は、非同期で更新されるローカルのobjectIdを強制的に更新する
 
         //verify
@@ -59,11 +59,11 @@ class RepositoryTest: XCTestCase {
         var task = Task(title: "",memo: "")
 
         //exercise
-        sut.setAsync(task,completeHandler: { (a) in })
+        sut.set(task)
         localDb.ar[0].objectId = "Obj1" // 本来は、非同期で更新されるローカルのobjectIdを強制的に更新する
         
         task.objectId = "Obj1"
-        sut.setAsync(task,completeHandler: { (a) in })
+        sut.set(task)
         
         var actual = localDb.count()
         
