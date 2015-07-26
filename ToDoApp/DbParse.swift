@@ -11,13 +11,13 @@ import SwiftyJSON
 
 //[SecretKey.swift]
 // Paers.com
-//    struct ParseSecret{
-//        static let appId = "XXXXXXXXXXXXXX6a4Y" //Application ID
-//        static let appKey = "XXXXXXXXXXXXXg7Zm" //REST API Key
-//    }
+//struct ParseSecret{
+//    static let appId = "pNJxxxxxxxxxxxxxxxxxxxxxxxxGlR" //Application ID
+//    static let appKey = "KBixxxxxxxxxxxxxxxxxxxxxxxOqO" //REST API Key
+//    static let appMaster = "w0hxxxxxxxxxxxxxxxxxxxxxxls0" //Master Key
+//}
 //SecretKey構造体は、SecretKey.swiftに定義されていますが、Githubには配置されていません
 
-//TODO　ProtocolでDbSqliteとポリフォリズムを構築する
 class DbParse : DbCloud{
 
     private let httpClient:HttpClient
@@ -120,34 +120,7 @@ class DbParse : DbCloud{
     
     // 一覧
     func selectAsync(completionHandler: (_:AsyncResult<[Task]>) -> Void) {
-        
         selectAsync(nil,completionHandler: completionHandler)
-        
-//        let url = apiUrl + "classes/" + tableName
-//        let request = httpClient.request("GET",url: url,headers: params,body: nil)
-//        
-//        httpClient.responseJSON(request,completionHandler: {
-//            (_, _ , data, error) in
-//            
-//            var ar:[Task] = []
-//            
-//            if error == nil {
-//                if data != nil {
-//                    let json:JSON = SwiftyJSON.JSON(data!)
-//                    let results = json["results"]
-//                    
-//                    //すべてのカラムのnilがない場合のみ有効なデータとする
-//                    //DBから取り出す時点でunwrapperを完了している、TaskにはOptionl型は存在しない
-//                    for (key,j) in json["results"]{
-//                        var t = Task(title: "",memo: "")
-//                        if t.fromJson(j) {
-//                            ar.append(t)
-//                        }
-//                    }
-//                }
-//            }
-//            completionHandler(AsyncResult(ar))
-//        })
     }
 
     // 一覧
