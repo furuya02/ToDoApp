@@ -22,7 +22,6 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
     // "タイトル"¥t"メッセージ"
     private var popupMessage : String?
 
-    
     //MARK: - View
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,24 +29,18 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
         view.backgroundColor = UIColor.silverTree()
 
         //検索・ごみ箱・マークの各ビューが閉じた時のハンドラ
-        trashView.onClose = onCloseHeaderView
-        searchView.onClose = onCloseHeaderView
-        markView.onClose = onCloseHeaderView 
+        trashView.onClose = { self.setViewMode(.Normal) }
+        searchView.onClose = { self.setViewMode(.Normal) }
+        markView.onClose = { self.setViewMode(.Normal) }
         
         searchView.onSearch = onSearch // 検索文字列が変化した時のイベントハンドラ
-        repository.setRefreshHandler(refresh) // 表示更新のハンドラを追加
+        repository.setRefreshHandler({ self.tableView.reloadData() }) // 表示更新のハンドラを追加
         repository.integration() //ローカルとクラウド間のデータの整合
-        
         setViewMode(.Normal)
         
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
     override func viewDidAppear(animated: Bool) {
-
 
         if let msg = popupMessage { // 画面遷移時のエラーがセットされている場合
             var str = msg.componentsSeparatedByString("\t")
@@ -60,7 +53,6 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
             
         }
     }
-
 
     //MARK: - Segue
     @IBAction func unwindTaskView(segue : UIStoryboardSegue){
@@ -148,29 +140,22 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
     
     
     //MARK: - Action
-    //追加
-    @IBAction func buttonAddTapped(sender: AnyObject) {
-        setViewMode(.Normal) // ノーマルビューに戻す
-        selectedIndex = -1 //追加処理の際は、番兵として−1を入れる
-        performSegueWithIdentifier("goTaskViewSegue", sender: nil)
-    }
 
-    // ごみ箱ボタン
-    @IBAction func buttonTrashTapped(sender: AnyObject) {
-        setViewMode(.Trash)
-    }
-    // 重要ボタン
-    @IBAction func buttonIsMarkTapped(sender: AnyObject) {
-        setViewMode(.Mark)
-    }
-    // 検索ボタン
-    @IBAction func buttonSearchTapped(sender: AnyObject) {
-        setViewMode(.Search)
-    }
-    
-    // 検索/ごみ箱ビューが閉じる時のイベントハンドラ
-    func onCloseHeaderView(){
-        setViewMode(.Normal) // ノーマルビューに戻す
+    //ToolBar上のボタンのタップ
+    @IBAction func buttonTapped(button: UIBarButtonItem){
+        switch button.tag {
+        case 0: // 検索ボタン
+            setViewMode(.Search)
+        case 1: // ごみ箱ボタン
+            setViewMode(.Trash)
+        case 2: // 重要マーク
+            setViewMode(.Mark)
+        default: // 追加ボタン
+            setViewMode(.Normal) // ノーマルビューに戻す
+            selectedIndex = -1 //追加処理の際は、番兵として−1を入れる
+            performSegueWithIdentifier("goTaskViewSegue", sender: nil)
+            
+        }
     }
     
     // 検索文字が変化した際のイベントハンドラ
@@ -178,34 +163,24 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
         repository.searchStr = searchText
     }
     
-
     // DB操作完了時のコールバック
     private func completeHandler(asyncResult:AsyncResult<Task?>){
         if let error = asyncResult.error {
             if error.code == 101 {
                 //エラー発生（ポップアップメッセージ）
                 popupMessage = "エラー\tデータの保存に失敗しました"
-                
             }
-        }else{
-            //refresh() // TableViewの表示更新
-            // クラウドとの通信に成功している場合は、バックグランドで整合処理も行う
-            repository.integration() //ローカルとクラウド間のデータの整合
         }
     }
+    
     // ビューの種類の変更
     func setViewMode(mode:ViewMode){
         repository.viewMode = mode
+        
         searchView.visible = mode == .Search ? true : false
         trashView.visible = mode == .Trash ? true : false
         markView.visible = mode == .Mark ? true : false
         
     }
-
-    // TableViewの表示更新
-    func refresh() {
-        tableView.reloadData()
-    }
-
 }
 

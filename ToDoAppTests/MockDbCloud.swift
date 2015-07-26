@@ -24,11 +24,9 @@ class MockDbCloud : MockDb,DbCloud{
         add(task)
     }
     
-    func pushInstall(deviceToken:String){
-    }
-    
-    func pushSend(objectId:String){
-    }
+    func installPush(deviceToken:String){}
+    func uninstallPush(){}
+    func sendPush(objectId:String){}
 
 
     

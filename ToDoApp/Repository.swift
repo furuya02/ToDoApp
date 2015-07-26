@@ -45,12 +45,10 @@ class Repository{
     func setRefreshHandler(handler:()->Void){
         self.refreshHandler = handler
     }
-    // デバイストークン
-    func pushInstall(deviceToken:String){
-        self.dbCloud.pushInstall(deviceToken)
-    }
+    
     
     // MARK: - public function
+
     // viewの取得
     var count:Int{
         return view.count
@@ -68,15 +66,17 @@ class Repository{
         var mode = Mode.Insert
         
         task.lastUpdate = NSDate() // 更新時間の記録
-        // ローカルDBにobjectIdが存在するか
-        if let t = dbLocal.search(task.objectId) {
-            // 存在する場合は、更新処理となる
-            task.ID = t.ID
-            mode = .Update
-        }else{
-            // 存在しない場合は、追加処理となる
-            task.ID = 0
+
+        // 新規か更新かの判断
+        if task.objectId != "" {
+            // ローカルDBにobjectIdが存在するか
+            if let t = dbLocal.search(task.objectId) {
+                // 更新
+                task.ID = t.ID
+                mode = .Update
+            }
         }
+
         // ローカルDBへの追加
         if !dbLocal.insert(task) {
             //エラー時は、NSErrorを生成して返す(code=99によってポップアップのエラーが表示される)
@@ -114,7 +114,7 @@ class Repository{
                     }
                 }
                 self.sendObjectId = task.objectId // 自ら通知したデータは、更新処理の対象外とするために記憶する
-                self.dbCloud.pushSend(task.objectId) // 通知の送信
+                self.dbCloud.sendPush(task.objectId) // 通知の送信
             }
         })
     }
@@ -171,6 +171,16 @@ class Repository{
         refreshView() // 再表示
     }
     
+    // push通知の登録
+    func installPush(deviceToken:String){
+        self.dbCloud.installPush(deviceToken)
+    }
+    
+    // push通知の登録削除
+    func uninstallPush(){
+        self.dbCloud.uninstallPush()
+    }
+
     // MARK: - private function
 
     //整合処理（本番処理）

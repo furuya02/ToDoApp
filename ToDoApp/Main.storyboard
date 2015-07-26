@@ -90,35 +90,6 @@
                                     <constraint firstAttribute="height" constant="45" id="jZz-l4-Vi7"/>
                                 </constraints>
                             </view>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3oi-IZ-EcW">
-                                <rect key="frame" x="0.0" y="556" width="600" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="BuL-NB-KDb"/>
-                                </constraints>
-                                <items>
-                                    <barButtonItem systemItem="search" id="kim-r2-7cZ">
-                                        <connections>
-                                            <action selector="buttonSearchTapped:" destination="mhk-19-fJz" id="DPF-CD-YYl"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem systemItem="trash" id="sgh-Pd-UJQ">
-                                        <connections>
-                                            <action selector="buttonTrashTapped:" destination="mhk-19-fJz" id="lC1-k5-tTZ"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem image="MarkIcon.png" id="UDh-SD-M6c">
-                                        <connections>
-                                            <action selector="buttonIsMarkTapped:" destination="mhk-19-fJz" id="TmK-MB-Q2n"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="nkz-dh-B3v"/>
-                                    <barButtonItem systemItem="add" id="0YT-th-cfx">
-                                        <connections>
-                                            <action selector="buttonAddTapped:" destination="mhk-19-fJz" id="F0n-Ae-I5q"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="f9j-Qt-tfE">
                                 <rect key="frame" x="0.0" y="155" width="600" height="401"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -199,6 +170,35 @@
                                     <outlet property="delegate" destination="mhk-19-fJz" id="6cj-hK-g6m"/>
                                 </connections>
                             </tableView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3oi-IZ-EcW">
+                                <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="BuL-NB-KDb"/>
+                                </constraints>
+                                <items>
+                                    <barButtonItem systemItem="search" id="kim-r2-7cZ">
+                                        <connections>
+                                            <action selector="buttonTapped:" destination="mhk-19-fJz" id="0iX-C1-v2M"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem tag="1" systemItem="trash" id="sgh-Pd-UJQ">
+                                        <connections>
+                                            <action selector="buttonTapped:" destination="mhk-19-fJz" id="nvB-oS-sO5"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem tag="2" image="MarkIcon.png" id="UDh-SD-M6c">
+                                        <connections>
+                                            <action selector="buttonTapped:" destination="mhk-19-fJz" id="FPG-zy-wxj"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="nkz-dh-B3v"/>
+                                    <barButtonItem tag="3" systemItem="add" id="0YT-th-cfx">
+                                        <connections>
+                                            <action selector="buttonTapped:" destination="mhk-19-fJz" id="YIk-ca-hB5"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -238,7 +238,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9dS-HL-GYI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="105" y="-73"/>
+            <point key="canvasLocation" x="-15" y="-162"/>
         </scene>
         <!--Task View Controller-->
         <scene sceneID="dNN-Hv-nIk">
@@ -370,7 +370,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LWk-Ko-0DV" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="lDU-vw-oog" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="113" y="-144"/>
+            <point key="canvasLocation" x="302" y="-104"/>
         </scene>
     </scenes>
     <resources>

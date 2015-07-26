@@ -23,6 +23,7 @@ class DbParse : DbCloud{
     private let httpClient:HttpClient
     private let tableName = "task"
     private let apiUrl = "https://api.parse.com/1/"
+    private var pushId:String = "" // push通知のobjectId(削除用)
     
     var params : [String:String] = [
         "X-Parse-Application-Id" : ParseSecret.appId ,
@@ -34,7 +35,7 @@ class DbParse : DbCloud{
     }
     
     //Push Notifycation の登録
-    func pushInstall(deviceToken:String){
+    func installPush(deviceToken:String){
         let url = apiUrl + "installations/"
 
         var str = "{"
@@ -55,13 +56,41 @@ class DbParse : DbCloud{
                 if data != nil {
                     let json:JSON = SwiftyJSON.JSON(data!)
                     println(json)
+                    if let objectId = json["objectId"].string {
+                        self.pushId = objectId
+                    }
+
                 }
             }
         })
 
     }
+    //Push Notifycation の登録削除
+    func uninstallPush(){
+        if pushId == "" {
+            return
+        }
+        var params : [String:String] = [
+            "X-Parse-Application-Id" : ParseSecret.appId ,
+            "X-Parse-Master-Key" : ParseSecret.appMaster ]
+        
+        let url = apiUrl + "installations/" + pushId
+        
+        let request = httpClient.request("DELETE",url: url,headers: params,body: nil)
+        
+        httpClient.responseJSON(request,completionHandler: {
+            (_, _, data, error) in
+            if let error = error {
+                NSLog("ERROR " + error.localizedDescription)
+            }else{
+                self.pushId = ""
+            }
+        })
+        
+    }
+
     //Push Notifycation の送信
-    func pushSend(objectId:String){
+    func sendPush(objectId:String){
         let url = apiUrl + "push"
         
         var str = "{"
@@ -69,12 +98,6 @@ class DbParse : DbCloud{
         str += ","
         str += "\"data\":{"
         str += "\"alert\":\"\(objectId)\""
-        str += ","
-        str += "\"badge\":\"Increment\""
-        str += ","
-        str += "\"sound\":\"cheering.caf\""
-        str += ","
-        str += "\"title\":\"Mets Score!\""
         str += "}"
         str += "}"
 
@@ -89,13 +112,6 @@ class DbParse : DbCloud{
                 if data != nil {
                     let json:JSON = SwiftyJSON.JSON(data!)
                     println(json)
-                    
-                    //論理エラーが発生している(objectIdが存在しない場合など)
-                    if let objectId = json["objectId"].string {
-                        var c = objectId
-                        //completionHandler(AsyncResult(task))
-                        //return
-                    }
                 }
             }
         })
@@ -105,31 +121,33 @@ class DbParse : DbCloud{
     // 一覧
     func selectAsync(completionHandler: (_:AsyncResult<[Task]>) -> Void) {
         
-        let url = apiUrl + "classes/" + tableName
-        let request = httpClient.request("GET",url: url,headers: params,body: nil)
+        selectAsync(nil,completionHandler: completionHandler)
         
-        httpClient.responseJSON(request,completionHandler: {
-            (_, _ , data, error) in
-            
-            var ar:[Task] = []
-            
-            if error == nil {
-                if data != nil {
-                    let json:JSON = SwiftyJSON.JSON(data!)
-                    let results = json["results"]
-                    
-                    //すべてのカラムのnilがない場合のみ有効なデータとする
-                    //DBから取り出す時点でunwrapperを完了している、TaskにはOptionl型は存在しない
-                    for (key,j) in json["results"]{
-                        var t = Task(title: "",memo: "")
-                        if t.fromJson(j) {
-                            ar.append(t)
-                        }
-                    }
-                }
-            }
-            completionHandler(AsyncResult(ar))
-        })
+//        let url = apiUrl + "classes/" + tableName
+//        let request = httpClient.request("GET",url: url,headers: params,body: nil)
+//        
+//        httpClient.responseJSON(request,completionHandler: {
+//            (_, _ , data, error) in
+//            
+//            var ar:[Task] = []
+//            
+//            if error == nil {
+//                if data != nil {
+//                    let json:JSON = SwiftyJSON.JSON(data!)
+//                    let results = json["results"]
+//                    
+//                    //すべてのカラムのnilがない場合のみ有効なデータとする
+//                    //DBから取り出す時点でunwrapperを完了している、TaskにはOptionl型は存在しない
+//                    for (key,j) in json["results"]{
+//                        var t = Task(title: "",memo: "")
+//                        if t.fromJson(j) {
+//                            ar.append(t)
+//                        }
+//                    }
+//                }
+//            }
+//            completionHandler(AsyncResult(ar))
+//        })
     }
 
     // 一覧
@@ -156,8 +174,6 @@ class DbParse : DbCloud{
                 if data != nil {
                     let json:JSON = SwiftyJSON.JSON(data!)
                     let results = json["results"]
-
-                    NSLog("\(results)")
                     
                     for (key,j) in json["results"]{
                         var t = Task(title: "",memo: "")
@@ -194,7 +210,6 @@ class DbParse : DbCloud{
             }else{
                 if data != nil {
                     let json:JSON = SwiftyJSON.JSON(data!)
-                    println(json)
                     
                     //論理エラーが発生している(objectIdが存在しない場合など)
                     if let errorStr = json["error"].string {
