@@ -174,14 +174,14 @@
 		276FEC721B67FED30022D4B0 /* ToDoApp */ = {
 			isa = PBXGroup;
 			children = (
-				276FECB21B68042D0022D4B0 /* Model */,
 				276FECAF1B68036F0022D4B0 /* Control */,
-				276FECA41B6803090022D4B0 /* Resources */,
+				276FECB21B68042D0022D4B0 /* Model */,
 				276FEC951B6802960022D4B0 /* Controller */,
 				276FEC751B67FED30022D4B0 /* AppDelegate.swift */,
 				276FEC791B67FED30022D4B0 /* Main.storyboard */,
 				276FEC7C1B67FED30022D4B0 /* Images.xcassets */,
 				276FEC7E1B67FED30022D4B0 /* LaunchScreen.xib */,
+				276FECA41B6803090022D4B0 /* Resources */,
 				276FEC731B67FED30022D4B0 /* Supporting Files */,
 			);
 			path = ToDoApp;
