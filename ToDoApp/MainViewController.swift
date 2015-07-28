@@ -105,6 +105,7 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
     
     func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
 
+        //iOS7では、無効
         let title =  repository.viewMode == .Trash ? "復活" : "削除"
         var deleteButton = UITableViewRowAction(style: .Default, title: title, handler: { (action, indexPath) in
             self.tableView.dataSource?.tableView?(

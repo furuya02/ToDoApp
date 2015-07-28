@@ -6,14 +6,14 @@
 //  Copyright (c) 2015年 SAPPOROWORKS. All rights reserved.
 //
 
-import Alamofire
+import UIKit
 
 //Alamofireのラッパークラス
 //テスト(モック作成)のために定義した
 
 class HttpClient{
 
-    func request(method:String,url:String,headers:[String:String]?,body:String?) -> Request {
+    func request2(method:String,url:String,headers:[String:String]?,body:String?) -> Request {
         let req = NSMutableURLRequest(URL: NSURL(string: url)!)
         req.HTTPMethod = method
         if let h = headers {
@@ -25,7 +25,7 @@ class HttpClient{
             let strData = b.dataUsingEncoding(NSUTF8StringEncoding)
             req.HTTPBody = strData
         }
-        return Alamofire.request(req)
+        return request(req)
     }
 
     func responseJSON(request:Request,completionHandler: (

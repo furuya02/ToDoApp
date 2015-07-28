@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SwiftyJSON
+
 
 //[SecretKey.swift]
 // Paers.com
@@ -46,7 +46,7 @@ class DbParse : DbCloud{
         str += "\"channels\":[\"todo\"]"
         str += "}"
         
-        let request = httpClient.request("POST",url: url,headers: params,body: str)
+        let request = httpClient.request2("POST",url: url,headers: params,body: str)
         
         httpClient.responseJSON(request,completionHandler: {
             (_, _, data, error) in
@@ -54,7 +54,7 @@ class DbParse : DbCloud{
                 NSLog("ERROR " + error.localizedDescription)
             }else{
                 if data != nil {
-                    let json:JSON = SwiftyJSON.JSON(data!)
+                    let json:JSON = JSON(data!)
                     println(json)
                     if let objectId = json["objectId"].string {
                         self.pushId = objectId
@@ -76,7 +76,7 @@ class DbParse : DbCloud{
         
         let url = apiUrl + "installations/" + pushId
         
-        let request = httpClient.request("DELETE",url: url,headers: params,body: nil)
+        let request = httpClient.request2("DELETE",url: url,headers: params,body: nil)
         
         httpClient.responseJSON(request,completionHandler: {
             (_, _, data, error) in
@@ -102,7 +102,7 @@ class DbParse : DbCloud{
         str += "}"
 
         
-        let request = httpClient.request("POST",url: url,headers: params,body: str)
+        let request = httpClient.request2("POST",url: url,headers: params,body: str)
         
         httpClient.responseJSON(request,completionHandler: {
             (_, _, data, error) in
@@ -110,7 +110,7 @@ class DbParse : DbCloud{
                 NSLog("ERROR " + error.localizedDescription)
             }else{
                 if data != nil {
-                    let json:JSON = SwiftyJSON.JSON(data!)
+                    let json:JSON = JSON(data!)
                     println(json)
                 }
             }
@@ -135,7 +135,7 @@ class DbParse : DbCloud{
             }
         }
         
-        let request = httpClient.request("GET",url: url,headers: params,body: nil)
+        let request = httpClient.request2("GET",url: url,headers: params,body: nil)
         httpClient.responseJSON(request,completionHandler: {
             (_, _ , data, error) in
             if let error = error {
@@ -145,7 +145,7 @@ class DbParse : DbCloud{
                 var ar:[Task] = []
                 
                 if data != nil {
-                    let json:JSON = SwiftyJSON.JSON(data!)
+                    let json:JSON = JSON(data!)
                     let results = json["results"]
                     
                     for (key,j) in json["results"]{
@@ -174,7 +174,7 @@ class DbParse : DbCloud{
         // Parse上では、DateTimeが+0900で扱われるので、変換してUPする
         var tmpTask = task.clone()
         tmpTask.lastUpdate = DateTime(nsdate: tmpTask.lastUpdate).addHour(-9).nsdate!
-        let request = httpClient.request(method,url: url,headers: params,body: tmpTask.toJson())
+        let request = httpClient.request2(method,url: url,headers: params,body: tmpTask.toJson())
         
         httpClient.responseJSON(request,completionHandler: {
             (_, _, data, error) in
@@ -182,7 +182,7 @@ class DbParse : DbCloud{
                 completionHandler(AsyncResult(error))
             }else{
                 if data != nil {
-                    let json:JSON = SwiftyJSON.JSON(data!)
+                    let json:JSON = JSON(data!)
                     
                     //論理エラーが発生している(objectIdが存在しない場合など)
                     if let errorStr = json["error"].string {
@@ -214,14 +214,14 @@ class DbParse : DbCloud{
         var url = apiUrl + "classes/" + tableName + "/" + task.objectId
         var method = "DELETE"
         
-        let request = httpClient.request(method,url: url,headers: params,body: nil)
+        let request = httpClient.request2(method,url: url,headers: params,body: nil)
         httpClient.responseJSON(request,completionHandler: {
             (_, _, data, error) in
             if let error = error {
                 completionHandler(AsyncResult(error))
             }else{
                 if data != nil {
-                    let json:JSON = SwiftyJSON.JSON(data!)
+                    let json:JSON = JSON(data!)
                 }
                 completionHandler(AsyncResult(nil))
             }

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SwiftyJSON
+
 
 class Task{
     var ID : Int = 0
@@ -69,7 +69,7 @@ class Task{
         return str
     }
    
-    func fromJson(json:SwiftyJSON.JSON) -> Bool {
+    func fromJson(json:JSON) -> Bool {
         if
             let objectId : String = json["objectId"].string,
             lastUpdateStr : String = json["lastUpdate"]["iso"].string,
