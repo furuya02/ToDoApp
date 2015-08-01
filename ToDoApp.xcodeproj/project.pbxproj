@@ -64,6 +64,7 @@
 		276FED001B6810E70022D4B0 /* DbLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECC21B6804760022D4B0 /* DbLocal.swift */; };
 		276FED011B6810EB0022D4B0 /* ViewMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECB91B68045C0022D4B0 /* ViewMode.swift */; };
 		276FED021B6811080022D4B0 /* AsyncResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECBB1B6804640022D4B0 /* AsyncResult.swift */; };
+		27F2E7CC1B6C4FE500546F35 /* TestUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F2E7CB1B6C4FE500546F35 /* TestUtil.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,6 +132,7 @@
 		276FECF11B6810760022D4B0 /* MockDbLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDbLocal.swift; sourceTree = "<group>"; };
 		276FECF21B6810760022D4B0 /* RepositoryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepositoryTest.swift; sourceTree = "<group>"; };
 		276FECF31B6810760022D4B0 /* TaskTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTest.swift; sourceTree = "<group>"; };
+		27F2E7CB1B6C4FE500546F35 /* TestUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestUtil.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +206,7 @@
 				276FECF11B6810760022D4B0 /* MockDbLocal.swift */,
 				276FECF21B6810760022D4B0 /* RepositoryTest.swift */,
 				276FECF31B6810760022D4B0 /* TaskTest.swift */,
+				27F2E7CB1B6C4FE500546F35 /* TestUtil.swift */,
 				276FEC891B67FED30022D4B0 /* Supporting Files */,
 			);
 			path = ToDoAppTests;
@@ -476,6 +479,7 @@
 				276FECFB1B6810BC0022D4B0 /* DateTime.swift in Sources */,
 				276FED001B6810E70022D4B0 /* DbLocal.swift in Sources */,
 				276FECF81B6810760022D4B0 /* RepositoryTest.swift in Sources */,
+				27F2E7CC1B6C4FE500546F35 /* TestUtil.swift in Sources */,
 				276FECFC1B6810C50022D4B0 /* Repository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

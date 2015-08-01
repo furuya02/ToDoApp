@@ -19,6 +19,8 @@ class MockDb {
     var mode : MockDbMode = .Local
     var counter : Int = 1
     
+    var connect:Bool = true
+    
     func count() -> Int{
         return ar.count
     }
@@ -37,6 +39,9 @@ class MockDb {
                 ar.append(task.clone())
             }
         case .Cloud:
+            if !connect { // クラウドが切断されている場合
+                return;
+            }
             if var i = search(task.objectId) {
                 ar[i] = task.clone()
             }else{
@@ -52,6 +57,9 @@ class MockDb {
                 ar.removeAtIndex(i)
             }
         case .Cloud:
+            if !connect { // クラウドが切断されている場合
+                return;
+            }
             if var i = search(task.objectId) {
                 ar.removeAtIndex(i)
             }

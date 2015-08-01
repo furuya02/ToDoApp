@@ -132,12 +132,12 @@ class TaskTest: XCTestCase {
     // MARK: - Support Function
 
     // 基準Taskの生成
-    private func CreateBaseTask() -> Task{
+    func CreateBaseTask() -> Task{
         return CreateTask(0,objectId:"",lastUpdate:"2015-01-01 00:00:00",title: "title",memo: "memo",isDone:false,isDelete:false)
     }
     
     // Taskの生成
-    private func CreateTask(ID:Int,objectId:String,lastUpdate:String,title:String,memo:String,isDone:Bool,isDelete:Bool) -> Task{
+    func CreateTask(ID:Int,objectId:String,lastUpdate:String,title:String,memo:String,isDone:Bool,isDelete:Bool) -> Task{
         
         let task = Task(title: title,memo:memo)
         task.ID = ID

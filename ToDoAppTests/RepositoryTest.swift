@@ -25,46 +25,76 @@ class RepositoryTest: XCTestCase {
         super.tearDown()
     }
     
-    func testSetAsync_新規データを２件追加するとDBは２件になる(){
+    //MARK: - set()
+    func testSet_新規データを1件setすると両DBは共に1件となる(){
         
         //setUp
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
-        let expected = 2
-
+        
         //exercise
-        sut.set(Task(title: "",memo: ""))
-        localDb.ar[0].objectId = "Obj1" // 本来は、非同期で更新されるローカルのobjectIdを強制的に更新する
-        sut.set(Task(title: "",memo: ""))
-        localDb.ar[1].objectId = "Obj2" // 本来は、非同期で更新されるローカルのobjectIdを強制的に更新する
+        sut.set(Task(title: "test1",memo: ""))
 
         //verify
-        //件数は、両方とも2件となる
-        XCTAssert(localDb.count() == 2)
-        XCTAssert(cloudDb.count() == 2)
-        
-        //データは、両方とも新しい方と同じになる
+        //件数は、両方とも1件となる
+        XCTAssert(localDb.count() == 1)
+        XCTAssert(cloudDb.count() == 1)
+        //1件目
         XCTAssert(localDb.ar[0].objectId == "Obj1")
         XCTAssert(cloudDb.ar[0].objectId == "Obj1")
-        XCTAssert(localDb.ar[1].objectId == "Obj2")
-        XCTAssert(cloudDb.ar[1].objectId == "Obj2")
+        XCTAssert(localDb.ar[0].title == "test1")
+        XCTAssert(cloudDb.ar[0].title == "test1")
         
-
         //tearDown
     }
     
-    func testSetAsync_同一objectIdのデータを２件追加するとDBは１件（更新）になる(){
+    func testSet_新規データを2件setすると両DBは共に2件となる(){
         
         //setUp
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
-        var task = Task(title: "",memo: "")
-
-        //exercise
-        sut.set(task)
-        localDb.ar[0].objectId = "Obj1" // 本来は、非同期で更新されるローカルのobjectIdを強制的に更新する
         
+        //exercise
+        sut.set(Task(title: "test1",memo: ""))
+        sut.set(Task(title: "test2",memo: ""))
+        
+        //verify
+        //件数は、両方とも1件となる
+        XCTAssert(localDb.count() == 2)
+        XCTAssert(cloudDb.count() == 2)
+        
+        //1件目
+        XCTAssert(localDb.ar[0].objectId == "Obj1")
+        XCTAssert(cloudDb.ar[0].objectId == "Obj1")
+        XCTAssert(localDb.ar[0].title == "test1")
+        XCTAssert(cloudDb.ar[0].title == "test1")
+        //2件目
+        XCTAssert(localDb.ar[1].objectId == "Obj2")
+        XCTAssert(cloudDb.ar[1].objectId == "Obj2")
+        XCTAssert(localDb.ar[1].title == "test2")
+        XCTAssert(cloudDb.ar[1].title == "test2")
+        
+        //tearDown
+    }
+    
+    
+    
+
+    func testSet_既存のobjectIdのデータをsetすると上書きになる(){
+        
+        //setUp
+        let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
+
+        //テストDBの初期化(Obj1のデータが１件存在する)
+        var t = Task(title: "",memo: "")
+        t.objectId = "Obj1"
+        cloudDb.add(t)
+        localDb.add(t)
+        
+        
+        //exercise
+        
+        var task = Task(title: "test1",memo: "")
         task.objectId = "Obj1"
         sut.set(task)
-        
         var actual = localDb.count()
         
         //verify
@@ -72,22 +102,106 @@ class RepositoryTest: XCTestCase {
         XCTAssert(localDb.count() == 1)
         XCTAssert(cloudDb.count() == 1)
         
-        //データは、両方とも新しい方と同じになる
+        //1件目が上書きとなる
         XCTAssert(localDb.ar[0].objectId == "Obj1")
         XCTAssert(cloudDb.ar[0].objectId == "Obj1")
+        XCTAssert(localDb.ar[0].title == "test1")
+        XCTAssert(cloudDb.ar[0].title == "test1")
+        
+        //tearDown
+    }
+    
+    func testSet_objectIdが空のデータをsetすると追加になる(){
+        
+        //setUp
+        let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
+        
+        //テストDBの初期化(Obj1のデータが１件存在する)
+        var t = Task(title: "",memo: "")
+        t.objectId = "Obj1"
+        cloudDb.add(t)
+        localDb.add(t)
+        
+        
+        //exercise
+        var task = Task(title: "test",memo: "")
+        sut.set(task)
+        var actual = localDb.count()
+        
+        //verify
+        //件数は、両方とも2件となる
+        XCTAssert(localDb.count() == 2)
+        XCTAssert(cloudDb.count() == 2)
+        //1件目は変化なし(既存データ)
+        XCTAssert(localDb.ar[0].objectId == "Obj1")
+        XCTAssert(cloudDb.ar[0].objectId == "Obj1")
+        XCTAssert(localDb.ar[0].title == "")
+        XCTAssert(cloudDb.ar[0].title == "")
+        //Obj2として２件目に追加されている
+        XCTAssert(localDb.ar[1].objectId == "Obj2")
+        XCTAssert(cloudDb.ar[1].objectId == "Obj2")
+        XCTAssert(localDb.ar[1].title == "test")
+        XCTAssert(cloudDb.ar[1].title == "test")
         
         //tearDown
     }
 
-
-    func testIntegration_ローカルに存在するがクラウドに存在しない_ObjectIdが有効_ローカルデータは削除される(){
+    func testSet_クラウド切断時_新規データを1件setするとobjectIdが空の1件となる(){
         
         //setUp
+        cloudDb.connect = false // クラウド切断
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
-        var task = Task(title: "LOCAL",memo: "")
-        task.objectId = "Obj1"
-        localDb.add(task)
         
+        //exercise
+        sut.set(Task(title: "test1",memo: ""))
+        
+        //verify
+        //件数は、ローカルのみ1件となる
+        XCTAssert(localDb.count() == 1)
+        XCTAssert(cloudDb.count() == 0)
+        //1件目
+        XCTAssert(localDb.ar[0].objectId == "") // objectIdが取得できないため空のままになる
+        XCTAssert(localDb.ar[0].title == "test1")
+        
+        //tearDown
+    }
+    
+    func testSet_クラウド切断時_新規データを2件setするとobjectIdが空の2件となる(){
+        
+        //setUp
+        cloudDb.connect = false // クラウド切断
+        let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
+        
+        //exercise
+        sut.set(Task(title: "test1",memo: ""))
+        sut.set(Task(title: "test2",memo: ""))
+        
+        //verify
+        //件数は、ローカルのみ2件となる
+        XCTAssert(localDb.count() == 2)
+        XCTAssert(cloudDb.count() == 0)
+        
+        //1件目
+        XCTAssert(localDb.ar[0].objectId == "")
+        XCTAssert(localDb.ar[0].title == "test1")
+        //2件目
+        XCTAssert(localDb.ar[1].objectId == "")
+        XCTAssert(localDb.ar[1].title == "test2")
+        
+        //tearDown
+    }
+
+    //MARK: - integration()
+
+    func testIntegration_クラウドに存在しないObjectIdは削除される(){
+        //setUp
+        let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
+        
+        //テストDBの初期化(Obj1のデータがローカルのみに１件存在する)
+        var t = Task(title: "",memo: "")
+        t.objectId = "Obj1"
+        localDb.add(t)
+
         //exercise
         sut.integration()
         
@@ -98,13 +212,15 @@ class RepositoryTest: XCTestCase {
         
         //tearDown
     }
-    
-    func testIntegration_ローカルに存在するがクラウドに存在しない場合_ObjectIdが空_クラウドにもコピーされる(){
-        
+
+    func testIntegration_ObjectIdが空のデータはクラウド側にもコピーされる(){
         //setUp
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
-        var task = Task(title: "LOCAL",memo: "")
-        localDb.add(task)
+        
+        //テストDBの初期化(objectIdが空のデータがローカルのみに１件存在する)
+        var t = Task(title: "test1",memo: "")
+        t.objectId = ""
+        localDb.add(t)
         
         //exercise
         sut.integration()
@@ -115,59 +231,68 @@ class RepositoryTest: XCTestCase {
         XCTAssert(cloudDb.count() == 1)
         
         
-        //tearDown
+        //1件目(objectIdは共にObj1になる)
         XCTAssert(localDb.ar[0].objectId == "Obj1")
         XCTAssert(cloudDb.ar[0].objectId == "Obj1")
+        XCTAssert(localDb.ar[0].title == "test1")
+        XCTAssert(cloudDb.ar[0].title == "test1")
         
-        XCTAssert(localDb.ar[0].title == "LOCAL")
-        XCTAssert(cloudDb.ar[0].title == "LOCAL")
+        
+        //tearDown
     }
-
-    func testIntegration_クラウドに存在するがローカルに存在しない場合_ローカルにもコピーされる(){
-        
+    
+    func testIntegration_クラウドのみに存在するデータはローカルにもコピーされる(){
         //setUp
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
-        cloudDb.add(Task(title: "CLOUD",memo: ""))
+        
+        //テストDBの初期化(Obj1のデータがクラウドのみに１件存在する)
+        var t = Task(title: "test1",memo: "")
+        t.objectId = "Obj1"
+        cloudDb.add(t)
         
         //exercise
         sut.integration()
         
         //verify
-        //件数は、両方とも１件となる
+        //件数は、両方とも1件となる
         XCTAssert(localDb.count() == 1)
         XCTAssert(cloudDb.count() == 1)
-        //データは、両方とも新しい方と同じになる
+        
+        
+        //1件目
         XCTAssert(localDb.ar[0].objectId == "Obj1")
         XCTAssert(cloudDb.ar[0].objectId == "Obj1")
-
-        XCTAssert(localDb.ar[0].title == "CLOUD")
-        XCTAssert(cloudDb.ar[0].title == "CLOUD")
+        XCTAssert(localDb.ar[0].title == "test1")
+        XCTAssert(cloudDb.ar[0].title == "test1")
+        
         
         //tearDown
     }
-    
-    func testIntegration_lastUpdate_クラウド側のデータが古い場合(){
-        
+
+    func testIntegration_クラウド側のデータが古い場合(){
         //setUp
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
         
-        //クラウド側は１０分前のデータである
+        //テストDBの初期化(クラウド側のデータが１０分古い)
         var t1 = Task(title: "CLOUD",memo: "")
+        t1.objectId = "Obj1"
         t1.lastUpdate = DateTime().addMinutes(-10).nsdate!
         cloudDb.add(t1)
-        
+
         var t2 = Task(title: "LOCAL",memo: "")
-        t2.objectId = "Obj1" // クラウドにあるデータと同一のobjectIdを持つ
+        t2.objectId = "Obj1"
         localDb.add(t2)
         
         //exercise
         sut.integration()
         
         //verify
-        //件数は、両方とも１件となる
+        //件数は、両方とも1件となる
         XCTAssert(localDb.count() == 1)
         XCTAssert(cloudDb.count() == 1)
-        //データは、両方とも新しい方と同じになる
+        
+        
+        //1件目(両方ともローカルと同じになる)
         XCTAssert(localDb.ar[0].objectId == "Obj1")
         XCTAssert(cloudDb.ar[0].objectId == "Obj1")
         XCTAssert(localDb.ar[0].title == "LOCAL")
@@ -176,16 +301,18 @@ class RepositoryTest: XCTestCase {
         //tearDown
     }
 
-    func testIntegration_lastUpdate_ローカル側のデータが古い場合(){
-        
+    
+    func testIntegration_ローカル側のデータが古い場合(){
         //setUp
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
         
-        //ローカル側は１０分前のデータである
+        //テストDBの初期化(ローカル側のデータが１０分古い)
         var t1 = Task(title: "CLOUD",memo: "")
+        t1.objectId = "Obj1"
         cloudDb.add(t1)
+        
         var t2 = Task(title: "LOCAL",memo: "")
-        t2.objectId = "Obj1" // クラウドにあるデータと同一のobjectIdを持つ
+        t2.objectId = "Obj1"
         t2.lastUpdate = DateTime().addMinutes(-10).nsdate!
         localDb.add(t2)
         
@@ -193,10 +320,12 @@ class RepositoryTest: XCTestCase {
         sut.integration()
         
         //verify
-        //件数は、両方とも１件となる
+        //件数は、両方とも1件となる
         XCTAssert(localDb.count() == 1)
         XCTAssert(cloudDb.count() == 1)
-        //データは、両方とも新しい方と同じになる
+        
+        
+        //1件目(両方ともクラウドと同じになる)
         XCTAssert(localDb.ar[0].objectId == "Obj1")
         XCTAssert(cloudDb.ar[0].objectId == "Obj1")
         XCTAssert(localDb.ar[0].title == "CLOUD")
@@ -204,65 +333,70 @@ class RepositoryTest: XCTestCase {
         
         //tearDown
     }
-    
-//    func testSetAsync_整合がとれた状態からローカルのデータを修正した場合(){
-//        
-//        //setUp
-//        let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
-//
-//        var t1 = Task(title: "BEFORE",memo: "")
-//        localDb.add(t1)
-//        sut.integration() // 整合
-//        //この時点で、両DBに１件のデータが存在する
-//        
-//        //exercise
-//        var t2 = Task(title: "AFTER",memo: "")
-//        //同一のデータであるということは、objectIdが同じである必要がある
-//        t2.objectId = t1.objectId
-//        sut.setAsync(t2, completeHandler: { (a) in })
-//        
-//        //verify
-//        //件数は、両方とも１件となる
-//        XCTAssert(localDb.count() == 1)
-//        XCTAssert(cloudDb.count() == 1)
-//        //データは、両方とも新しい方と同じになる
-//        XCTAssert(localDb.ar[0].objectId == "Obj1")
-//        XCTAssert(cloudDb.ar[0].objectId == "Obj1")
-//        XCTAssert(localDb.ar[0].title == "AFTER")
-//        XCTAssert(cloudDb.ar[0].title == "AFTER")
-//        
-//        //tearDown
-//    }
 
-    func testSetAsync_整合がとれた状態からクラウドのデータを修正し_再度整合した場合(){
-        
+    func testIntegration_整合がとれた状態からローカル側を更新した場合(){
         //setUp
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
         
+        //テストDBの初期化
         var t1 = Task(title: "BEFORE",memo: "")
-        localDb.add(t1)
-        sut.integration() // 整合
-        //この時点で、両DBに１件のデータが存在する
-    
-        //クラウドのデータを修正する
-        cloudDb.ar[0].title = "CHANGE"
-        cloudDb.ar[0].lastUpdate = DateTime(nsdate: cloudDb.ar[0].lastUpdate).addMinutes(1).nsdate! // 修正時刻を１分進める
+        cloudDb.add(t1)
+
+        sut.integration() //一旦整合が完了した状態とする
+
+        // クラウド側が修正される
+        localDb.ar[0].lastUpdate = DateTime().addMinutes(1).nsdate!//1分後
+        localDb.ar[0].title = "AFTER"
         
-    
         //exercise
-        sut.integration() // 再度、整合処理を行う
-    
-    
+        sut.integration()
+        
         //verify
-        //件数は、両方とも１件となる
+        //件数は、両方とも1件となる
         XCTAssert(localDb.count() == 1)
         XCTAssert(cloudDb.count() == 1)
-        //データは、両方とも新しい方と同じになる
-        XCTAssert(localDb.ar[0].title == "CHANGE")
-        XCTAssert(cloudDb.ar[0].title == "CHANGE")
+        
+        
+        //1件目(両方ともクラウドと同じになる)
+        XCTAssert(localDb.ar[0].objectId == "Obj1")
+        XCTAssert(cloudDb.ar[0].objectId == "Obj1")
+        XCTAssert(localDb.ar[0].title == "AFTER")
+        XCTAssert(cloudDb.ar[0].title == "AFTER")
         
         //tearDown
     }
 
+    func testIntegration_整合がとれた状態からクラウド側を更新した場合(){
+        //setUp
+        let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
+        
+        //テストDBの初期化
+        var t1 = Task(title: "BEFORE",memo: "")
+        cloudDb.add(t1)
+        
+        sut.integration() //一旦整合が完了した状態とする
+        
+        // クラウド側が修正される
+        cloudDb.ar[0].lastUpdate = DateTime().addMinutes(1).nsdate!//1分後
+        cloudDb.ar[0].title = "AFTER"
+        
+        //exercise
+        sut.integration()
+        
+        //verify
+        //件数は、両方とも1件となる
+        XCTAssert(localDb.count() == 1)
+        XCTAssert(cloudDb.count() == 1)
+        
+        
+        //1件目(両方ともクラウドと同じになる)
+        XCTAssert(localDb.ar[0].objectId == "Obj1")
+        XCTAssert(cloudDb.ar[0].objectId == "Obj1")
+        XCTAssert(localDb.ar[0].title == "AFTER")
+        XCTAssert(cloudDb.ar[0].title == "AFTER")
+        
+        //tearDown
+    }
+    
 
 }
