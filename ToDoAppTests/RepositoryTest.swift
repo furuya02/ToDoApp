@@ -205,7 +205,7 @@ class RepositoryTest: XCTestCase {
         //tearDown
     }
 
-    func testIntegration_ObjectIdが空のデータはクラウド側にもコピーされる(){
+    func testIntegration_objectIdが空のデータはクラウド側にもコピーされる(){
         //setUp
         let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
         
@@ -390,5 +390,64 @@ class RepositoryTest: XCTestCase {
         //tearDown
     }
     
+    
+    func testIntegration_objectId_ローカルにデータが存在しない場合(){
+        //setUp
+        let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
+        
+        //テストDBの初期化(クラウドのみにデータが存在する)
+        var t1 = Task(title: "CLOUD",memo: "")
+        cloudDb.add(t1)
+        let objectId = t1.objectId
+        
+        //exercise
+        sut.integration(objectId)
+        
+        //verify
+        //件数は、両方とも1件となる
+        XCTAssert(localDb.count() == 1)
+        XCTAssert(cloudDb.count() == 1)
+        
+        
+        //1件目(両方ともクラウドと同じになる)
+        XCTAssert(localDb.ar[0].objectId == "Obj1")
+        XCTAssert(cloudDb.ar[0].objectId == "Obj1")
+        XCTAssert(localDb.ar[0].title == "CLOUD")
+        XCTAssert(cloudDb.ar[0].title == "CLOUD")
+        
+        //tearDown
+    }
+    
+    func testIntegration_objectId_ローカルのデータが古い場合(){
+        //setUp
+        let sut = Repository(dbLocal: localDb,dbCloud: cloudDb)
+        
+        //テストDBの初期化
+        var t1 = Task(title: "BEFORE",memo: "")
+        cloudDb.add(t1)
+        localDb.add(t1)
 
+        // ローカルのデータを古いものにする
+        t1.title = "AFTER"
+        t1.lastUpdate = DateTime().addMinutes(-1).nsdate!
+        localDb.ar[0] = t1
+        let objectId = t1.objectId
+        
+        //exercise
+        sut.integration(objectId)
+        
+        //verify
+        //件数は、両方とも1件となる
+        XCTAssert(localDb.count() == 1)
+        XCTAssert(cloudDb.count() == 1)
+        
+        
+        //1件目(両方ともクラウドと同じになる)
+        XCTAssert(localDb.ar[0].objectId == "Obj1")
+        XCTAssert(cloudDb.ar[0].objectId == "Obj1")
+        XCTAssert(localDb.ar[0].title == "BEFORE")
+        XCTAssert(cloudDb.ar[0].title == "BEFORE")
+        
+        //tearDown
+    }
 }
