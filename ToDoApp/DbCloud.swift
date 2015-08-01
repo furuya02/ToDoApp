@@ -1,12 +1,4 @@
-//
-//  DbCloud.swift
-//  ToDoApp
-//
-//  Created by ShinichiHirauchi on 2015/07/12.
-//  Copyright (c) 2015年 SAPPOROWORKS. All rights reserved.
-//
-
-import Foundation
+import UIKit
 
 // テストの際にモックに置き換えることができるようにプロトタイプで定義する
 protocol DbCloud{

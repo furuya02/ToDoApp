@@ -1,10 +1,3 @@
-//
-//  UIToggleButton.swift
-//  ToDoApp
-//
-//  Created by ShinichiHirauchi on 2015/07/04.
-//  Copyright (c) 2015年 SAPPOROWORKS. All rights reserved.
-//
 
 import UIKit
 

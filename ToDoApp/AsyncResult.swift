@@ -1,12 +1,4 @@
-//
-//  AsyncResult.swift
-//  ToDoApp
-//
-//  Created by ShinichiHirauchi on 2015/07/07.
-//  Copyright (c) 2015年 SAPPOROWORKS. All rights reserved.
-//
-
-import Foundation
+import UIKit
 
 //非同期メソッドの戻り値を定型化するために定義
 //error：NSError?が　nil かどうかでエラー発生の有無を表現する

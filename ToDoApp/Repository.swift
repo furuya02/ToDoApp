@@ -1,12 +1,4 @@
-//
-//  Repository.swift
-//  ToDoApp
-//
-//  Created by ShinichiHirauchi on 2015/07/04.
-//  Copyright (c) 2015年 SAPPOROWORKS. All rights reserved.
-//
-
-import Foundation
+import UIKit
 
 class Repository{
     private var view : [Task] = [] // 条件に基づいて構築されたビュー

@@ -1,11 +1,3 @@
-//
-//  SearchView.swift
-//  ToDoApp
-//
-//  Created by ShinichiHirauchi on 2015/07/16.
-//  Copyright (c) 2015年 SAPPOROWORKS. All rights reserved.
-//
-
 import UIKit
 
 class SearchView: HeaderView, UISearchBarDelegate{
