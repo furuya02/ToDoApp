@@ -1,6 +1,5 @@
 import UIKit
 
-
 //[SecretKey.swift]
 // Paers.com
 //struct ParseSecret{
@@ -12,7 +11,7 @@ import UIKit
 
 class DbParse : DbCloud{
 
-    private let httpClient:HttpClient
+    //private let httpClient:HttpClient
     private let tableName = "task"
     private let apiUrl = "https://api.parse.com/1/"
     private var pushId:String = "" // push通知のobjectId(削除用)
@@ -22,9 +21,9 @@ class DbParse : DbCloud{
         "X-Parse-REST-API-Key" : ParseSecret.appKey ,
         "Content-Type" : "application/json"]
     
-    init(httpClient: HttpClient){
-        self.httpClient = httpClient
-    }
+    //init(httpClient: HttpClient){
+      //  self.httpClient = httpClient
+    //}
     
     //Push Notifycation の登録
     func installPush(deviceToken:String){
@@ -38,9 +37,16 @@ class DbParse : DbCloud{
         str += "\"channels\":[\"todo\"]"
         str += "}"
         
-        let request = httpClient.request2("POST",url: url,headers: params,body: str)
-        
-        httpClient.responseJSON(request,completionHandler: {
+        //let request = httpClient.request2("POST",url: url,headers: params,body: str)
+      
+        let req = NSMutableURLRequest(URL: NSURL(string: url)!)
+        req.HTTPMethod = "POST"
+        for (f,v) in params {
+            req.addValue(v, forHTTPHeaderField:f)
+        }
+        req.HTTPBody = str.dataUsingEncoding(NSUTF8StringEncoding)
+
+        request(req).responseJSON(completionHandler: {
             (_, _, data, error) in
             if let error = error {
                 NSLog("ERROR " + error.localizedDescription)
@@ -68,9 +74,15 @@ class DbParse : DbCloud{
         
         let url = apiUrl + "installations/" + pushId
         
-        let request = httpClient.request2("DELETE",url: url,headers: params,body: nil)
+        //let request = httpClient.request2("DELETE",url: url,headers: params,body: nil)
         
-        httpClient.responseJSON(request,completionHandler: {
+        let req = NSMutableURLRequest(URL: NSURL(string: url)!)
+        req.HTTPMethod = "DELETE"
+        for (f,v) in params {
+            req.addValue(v, forHTTPHeaderField:f)
+        }
+        
+        request(req).responseJSON(completionHandler: {
             (_, _, data, error) in
             if let error = error {
                 NSLog("ERROR " + error.localizedDescription)
@@ -94,9 +106,16 @@ class DbParse : DbCloud{
         str += "}"
 
         
-        let request = httpClient.request2("POST",url: url,headers: params,body: str)
+//        let request = httpClient.request2("POST",url: url,headers: params,body: str)
+  
+        let req = NSMutableURLRequest(URL: NSURL(string: url)!)
+        req.HTTPMethod = "POST"
+        for (f,v) in params {
+            req.addValue(v, forHTTPHeaderField:f)
+        }
+        req.HTTPBody = str.dataUsingEncoding(NSUTF8StringEncoding)
         
-        httpClient.responseJSON(request,completionHandler: {
+        request(req).responseJSON(completionHandler: {
             (_, _, data, error) in
             if let error = error {
                 NSLog("ERROR " + error.localizedDescription)
@@ -127,8 +146,16 @@ class DbParse : DbCloud{
             }
         }
         
-        let request = httpClient.request2("GET",url: url,headers: params,body: nil)
-        httpClient.responseJSON(request,completionHandler: {
+        let req = NSMutableURLRequest(URL: NSURL(string: url)!)
+        req.HTTPMethod = "GET"
+        for (f,v) in params {
+           req.addValue(v, forHTTPHeaderField:f)
+        }
+//        if let b = body {
+//            let strData = b.dataUsingEncoding(NSUTF8StringEncoding)
+//            req.HTTPBody = strData
+//        }
+        request(req).responseJSON(options: nil, completionHandler: {
             (_, _ , data, error) in
             if let error = error {
                 NSLog(error.localizedDescription + "  code=\(error.code)")
@@ -166,9 +193,16 @@ class DbParse : DbCloud{
         // Parse上では、DateTimeが+0900で扱われるので、変換してUPする
         var tmpTask = task.clone()
         tmpTask.lastUpdate = DateTime(nsdate: tmpTask.lastUpdate).addHour(-9).nsdate!
-        let request = httpClient.request2(method,url: url,headers: params,body: tmpTask.toJson())
+//        let request = httpClient.request2(method,url: url,headers: params,body: tmpTask.toJson())
         
-        httpClient.responseJSON(request,completionHandler: {
+        let req = NSMutableURLRequest(URL: NSURL(string: url)!)
+        req.HTTPMethod = method
+        for (f,v) in params {
+            req.addValue(v, forHTTPHeaderField:f)
+        }
+        req.HTTPBody = tmpTask.toJson().dataUsingEncoding(NSUTF8StringEncoding)
+
+        request(req).responseJSON(options: nil,completionHandler: {
             (_, _, data, error) in
             if let error = error {
                 completionHandler(AsyncResult(error))
@@ -206,8 +240,14 @@ class DbParse : DbCloud{
         var url = apiUrl + "classes/" + tableName + "/" + task.objectId
         var method = "DELETE"
         
-        let request = httpClient.request2(method,url: url,headers: params,body: nil)
-        httpClient.responseJSON(request,completionHandler: {
+        //let request = httpClient.request2(method,url: url,headers: params,body: nil)
+        let req = NSMutableURLRequest(URL: NSURL(string: url)!)
+        req.HTTPMethod = "DELETE"
+        for (f,v) in params {
+            req.addValue(v, forHTTPHeaderField:f)
+        }
+        
+        request(req).responseJSON(options: nil,completionHandler: {
             (_, _, data, error) in
             if let error = error {
                 completionHandler(AsyncResult(error))

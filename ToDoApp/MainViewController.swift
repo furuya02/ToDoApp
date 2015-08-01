@@ -2,7 +2,7 @@ import UIKit
 
 class MainViewController: UIViewController , UITableViewDataSource , UITableViewDelegate{
     //MARK: - Data
-    var repository =  Repository(dbLocal: DbSqlite(),dbCloud: DbParse(httpClient:HttpClient()))
+    var repository =  Repository(dbLocal: DbSqlite(),dbCloud: DbParse())
     
     //MARK: - Property
     @IBOutlet weak var tableView: UITableView!
@@ -22,12 +22,15 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
 
         //検索・ごみ箱・マークの各ビューが閉じた時のハンドラ
         trashView.onClose = { self.setViewMode(.Normal) }
-        searchView.onClose = { self.setViewMode(.Normal) }
         markView.onClose = { self.setViewMode(.Normal) }
+        searchView.onClose = { self.setViewMode(.Normal) }
+        // 検索文字列が変化した時のハンドラ
+        searchView.onSearch = { (s) in self.repository.searchStr=s }
+
         
-        searchView.onSearch = onSearch // 検索文字列が変化した時のイベントハンドラ
         repository.setRefreshHandler({ self.tableView.reloadData() }) // 表示更新のハンドラを追加
         repository.integration() //ローカルとクラウド間のデータの整合
+        
         setViewMode(.Normal)
         
     }
@@ -154,16 +157,10 @@ class MainViewController: UIViewController , UITableViewDataSource , UITableView
         }
     }
     
-    // 検索文字が変化した際のイベントハンドラ
-    func onSearch(searchText:String){
-        repository.searchStr = searchText
-    }
-    
-    
     // ビューの種類の変更
     func setViewMode(mode:ViewMode){
-        repository.viewMode = mode
-        
+        repository.viewMode = mode // モード変更
+        // HeaderViewの表示・非表示を変更
         searchView.visible = mode == .Search ? true : false
         trashView.visible = mode == .Trash ? true : false
         markView.visible = mode == .Mark ? true : false

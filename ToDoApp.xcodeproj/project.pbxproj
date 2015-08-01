@@ -35,7 +35,6 @@
 		276FECC61B6804760022D4B0 /* DbLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECC21B6804760022D4B0 /* DbLocal.swift */; };
 		276FECC71B6804760022D4B0 /* DbParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECC31B6804760022D4B0 /* DbParse.swift */; };
 		276FECC81B6804760022D4B0 /* DbSqlite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECC41B6804760022D4B0 /* DbSqlite.swift */; };
-		276FECCA1B68047C0022D4B0 /* HttpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECC91B68047C0022D4B0 /* HttpClient.swift */; };
 		276FECCC1B6804880022D4B0 /* SecretKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECCB1B6804880022D4B0 /* SecretKey.swift */; };
 		276FECD01B6805000022D4B0 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECCF1B6805000022D4B0 /* SwiftyJSON.swift */; };
 		276FECDC1B6805720022D4B0 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276FECD21B6805720022D4B0 /* Alamofire.swift */; };
@@ -109,7 +108,6 @@
 		276FECC21B6804760022D4B0 /* DbLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DbLocal.swift; sourceTree = "<group>"; };
 		276FECC31B6804760022D4B0 /* DbParse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DbParse.swift; sourceTree = "<group>"; };
 		276FECC41B6804760022D4B0 /* DbSqlite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DbSqlite.swift; sourceTree = "<group>"; };
-		276FECC91B68047C0022D4B0 /* HttpClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpClient.swift; sourceTree = "<group>"; };
 		276FECCB1B6804880022D4B0 /* SecretKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecretKey.swift; sourceTree = "<group>"; };
 		276FECCF1B6805000022D4B0 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = Frameworks/SwiftyJSON/SwiftyJSON.swift; sourceTree = "<group>"; };
 		276FECD21B6805720022D4B0 /* Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Alamofire.swift; path = Frameworks/Alamofire/Alamofire.swift; sourceTree = "<group>"; };
@@ -198,12 +196,12 @@
 		276FEC881B67FED30022D4B0 /* ToDoAppTests */ = {
 			isa = PBXGroup;
 			children = (
+				276FECF21B6810760022D4B0 /* RepositoryTest.swift */,
+				276FECF31B6810760022D4B0 /* TaskTest.swift */,
 				276FECEE1B6810750022D4B0 /* DateTimeTest.swift */,
 				276FECEF1B6810760022D4B0 /* MockDb.swift */,
 				276FECF01B6810760022D4B0 /* MockDbCloud.swift */,
 				276FECF11B6810760022D4B0 /* MockDbLocal.swift */,
-				276FECF21B6810760022D4B0 /* RepositoryTest.swift */,
-				276FECF31B6810760022D4B0 /* TaskTest.swift */,
 				276FEC891B67FED30022D4B0 /* Supporting Files */,
 			);
 			path = ToDoAppTests;
@@ -220,13 +218,13 @@
 		276FEC951B6802960022D4B0 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				276FEC961B6802DA0022D4B0 /* HeaderView.swift */,
-				276FEC971B6802DA0022D4B0 /* MainTableViewCell.swift */,
 				276FEC981B6802DA0022D4B0 /* MainViewController.swift */,
-				276FEC991B6802DA0022D4B0 /* MarkView.swift */,
-				276FEC9A1B6802DA0022D4B0 /* SearchView.swift */,
+				276FEC971B6802DA0022D4B0 /* MainTableViewCell.swift */,
 				276FEC9B1B6802DA0022D4B0 /* TaskViewController.swift */,
+				276FEC961B6802DA0022D4B0 /* HeaderView.swift */,
+				276FEC991B6802DA0022D4B0 /* MarkView.swift */,
 				276FEC9C1B6802DA0022D4B0 /* TrashView.swift */,
+				276FEC9A1B6802DA0022D4B0 /* SearchView.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -255,7 +253,6 @@
 			isa = PBXGroup;
 			children = (
 				276FECCB1B6804880022D4B0 /* SecretKey.swift */,
-				276FECC91B68047C0022D4B0 /* HttpClient.swift */,
 				276FECC11B6804760022D4B0 /* DbCloud.swift */,
 				276FECC21B6804760022D4B0 /* DbLocal.swift */,
 				276FECC31B6804760022D4B0 /* DbParse.swift */,
@@ -426,7 +423,6 @@
 				276FECC81B6804760022D4B0 /* DbSqlite.swift in Sources */,
 				276FECB11B6803810022D4B0 /* UIToggleButton.swift in Sources */,
 				276FECA21B6802DB0022D4B0 /* TaskViewController.swift in Sources */,
-				276FECCA1B68047C0022D4B0 /* HttpClient.swift in Sources */,
 				276FECC61B6804760022D4B0 /* DbLocal.swift in Sources */,
 				276FECE11B6805720022D4B0 /* Request.swift in Sources */,
 				276FEC9E1B6802DA0022D4B0 /* MainTableViewCell.swift in Sources */,
